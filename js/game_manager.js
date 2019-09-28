@@ -197,7 +197,7 @@ GameManager.prototype.findFarthestPosition = function (cell, vector) {
 
     do {
         previous = cell;
-        cell = {x: previous.x + vector.x, y: previous.y + vector.y};
+        cell = { x: previous.x + vector.x, y: previous.y + vector.y };
     } while (this.grid.withinBounds(cell) && this.grid.cellAvailable(cell));
 
     return {
@@ -221,7 +221,7 @@ GameManager.prototype.tileMatchesAvailable = function () {
             if (tile) {
                 for (var direction = 0; direction < 4; direction++) {
                     var vector = self.getVector(direction);
-                    var cell = {x: x + vector.x, y: y + vector.y};
+                    var cell = { x: x + vector.x, y: y + vector.y };
 
                     var other = self.grid.cellContent(cell);
 
