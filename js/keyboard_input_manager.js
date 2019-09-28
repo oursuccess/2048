@@ -1,12 +1,12 @@
-function KeyboardInputManager(){
+function KeyboardInputManager() {
     this.events = {};
 
-    if(window.navigator.msPointerEnabled){
+    if (window.navigator.msPointerEnabled) {
         this.eventTouchstart = "MSPointerDown";
         this.eventTouchmove = "MSPointerMove";
         this.eventTouchend = "MSPointerUp";
     }
-    else{
+    else {
         this.eventTouchstart = "touchstart";
         this.eventTouchmove = "touchmove";
         this.evnetTouchend = "touchend";
@@ -15,23 +15,23 @@ function KeyboardInputManager(){
     this.listen();
 }
 
-KeyboardInputManager.prototype.on = function(event, callback){
-    if(!this.events[event]){
+KeyboardInputManager.prototype.on = function (event, callback) {
+    if (!this.events[event]) {
         this.events[event] = [];
     }
     this.events[event].push(callback);
 };
 
-KeyboardInputManager.prototype.emit = function(event, data){
+KeyboardInputManager.prototype.emit = function (event, data) {
     var callbacks = this.events[event];
-    if(callbacks){
-        callbacks.forEach(function (callback){
+    if (callbacks) {
+        callbacks.forEach(function (callback) {
             callback(data);
         });
     }
 };
 
-KeyboardInputManager.prototype.listen = function(){
+KeyboardInputManager.prototype.listen = function () {
     var self = this;
 
     var map = {
@@ -49,18 +49,18 @@ KeyboardInputManager.prototype.listen = function(){
         65: 3
     };
 
-    document.addEventListener("keydown", function(event){
+    document.addEventListener("keydown", function (event) {
         var modifiers = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
         var mapped = map[event.which];
 
-        if(!modifiers){
-            if(mapped !== undefined){
+        if (!modifiers) {
+            if (mapped !== undefined) {
                 event.preventDefault();
                 self.emit("move", mapped);
             }
         }
 
-        if(!modifiers && event.which === 82){
+        if (!modifiers && event.which === 82) {
             self.restart.call(self, event);
         }
     });
@@ -72,16 +72,16 @@ KeyboardInputManager.prototype.listen = function(){
     var touchStartClientX, touchStartClientY;
     var gameContainer = document.getElementsByClassName("game-container")[0];
 
-    gameContainer.addEventListener(this.eventTouchstart, function(event){
-        if((!window.navigator.msPointerEnabled && event.touches.length > 1) || event.targetTouches.length > 1){
+    gameContainer.addEventListener(this.eventTouchstart, function (event) {
+        if ((!window.navigator.msPointerEnabled && event.touches.length > 1) || event.targetTouches.length > 1) {
             return;
         }
 
-        if(window.navigator.msPointerEnabled){
+        if (window.navigator.msPointerEnabled) {
             touchStartClientX = event.pageX;
             touchStartClientY = event.pageY;
         }
-        else{
+        else {
             touchStartClientX = event.touches[0].clientX;
             touchStartClientY = event.touches[0].clientY;
         }
@@ -89,22 +89,22 @@ KeyboardInputManager.prototype.listen = function(){
         event.preventDefault();
     });
 
-    gameContainer.addEventListener(this.eventTouchmove, function(event){
+    gameContainer.addEventListener(this.eventTouchmove, function (event) {
         event.preventDefault();
     });
 
-    gameContainer.addEventListener(this.eventTouchend, function(event){
-        if((!window.navigator.msPointerEnabled && event.touches.length > 0) || event.targetTouches.length > 0){
+    gameContainer.addEventListener(this.eventTouchend, function (event) {
+        if((!window.navigator.msPointerEnabled && event.touches.length > 0) || event.targetTouches.length > 0) {
             return;
         }
 
         var touchEndClientX, touchEndClientY;
 
-        if(window.navigator.msPointerEnabled){
+        if (window.navigator.msPointerEnabled) {
             touchEndClientX = event.pageX;
             touchEndClientY = event.pageY;
         }
-        else{
+        else {
             touchEndClientX = event.changedTouches[0].clientX;
             touchEndClientY = event.changedTouches[0].clientY;
         }
@@ -115,24 +115,24 @@ KeyboardInputManager.prototype.listen = function(){
         var dy = touchEndClientY - touchStartClientY;
         var absDy = Math.abs(dy);
 
-        if(Math.max(absDx, absDy) > 10){
-            self.emit("move", absDx > absDy ? (dx>0?1:3) : (dy>0?2:0));
+        if (Math.max(absDx, absDy) > 10) {
+            self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
         }
     });
 };
 
-KeyboardInputManager.prototype.restart = function(event){
+KeyboardInputManager.prototype.restart = function (event) {
     event.preventDefault();
     this.emit("restart");
 };
 
-KeyboardInputManager.prototype.keepPlaying = function(event){
+KeyboardInputManager.prototype.keepPlaying = function (event) {
     event.preventDefault();
     this.emit("keepPlaying");
 };
 
-KeyboardInputManager.prototype.bindButtonPress = function(selector, fn){
+KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
     var button = document.querySelector(selector);
     button.addEventListener("click", fn.bind(this));
     button.addEventListener(this.eventTouchend, fn.bind(this));
-}
+};

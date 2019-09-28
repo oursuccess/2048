@@ -1,5 +1,5 @@
-function Tile(position, value){
-    this.x = positon.x;
+function Tile(position, value) {
+    this.x = position.x;
     this.y = position.y;
     this.value = value || 2;
 
@@ -7,18 +7,18 @@ function Tile(position, value){
     this.mergedFrom = null;
 }
 
-Tile.prototype.savePosition = function(){
-    this.previousPosition = {x: this.x, y: this.y};
+Tile.prototype.savePosition = function () {
+    this.previousPosition = { x: this.x, y: this.y };
 };
 
-Tile.prototype.updatePosition = function(position){
+Tile.prototype.updatePosition = function (position) {
     this.x = position.x;
     this.y = position.y;
 };
 
-Tile.prototype.serialize = function(){
-    return{
-        position:{
+Tile.prototype.serialize = function () {
+    return {
+        position: {
             x: this.x,
             y: this.y
         },

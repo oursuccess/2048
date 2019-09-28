@@ -1,47 +1,47 @@
-(function(){
-    if(typeof window.Element === "undefined" || "classList" in document.documentElement){
+(function () {
+    if(typeof window.Element === "undefined" || "classList" in document.documentElement) {
         return;
     }
 
     var prototype = Array.prototype, push = prototype.push, splice = prototype.splice, join = prototype.join;
 
-    function DOMTokenList(el){
+    function DOMTokenList(el) {
         this.el = el;
 
         var classes = el.className.replace(/^\s+|\s+$/g, '').split(/\s+/);
-        for(var i = 0; i < classes.length; i++){
+        for (var i = 0; i < classes.length; i++) {
             push.call(this, classes[i]);
         }
     }
 
     DOMTokenList.prototype = {
-        add: function(token){
-            if(this.contains(token)) return;
+        add: function (token) {
+            if (this.contains(token)) return;
             push.call(this, token);
             this.el.className = this.toString();
         },
-        contains: function(token){
+        contains: function (token) {
             return this.el.className.indexOf(token) != -1;
         },
-        item: function(index){
+        item: function (index) {
             return this[index] || null;
         },
-        remove: function(token){
-            if(!this.contains(token)) return;
-            for(var i = 0; i < this.length; i++){
-                if(this[i] == token) break;
+        remove: function (token) {
+            if (!this.contains(token)) return;
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] == token) break;
             }
             splice.call(this, i, 1);
             this.el.className = this.toString();
         },
-        toString: function(){
+        toString: function () {
             return join.call(this, ' ');
         },
-        toggle: function(token){
-            if(!this.contains(token)){
+        toggle: function (token) {
+            if (!this.contains(token)) {
                 this.add(token);
             }
-            else{
+            else {
                 this.remove(token);
             }
 
@@ -51,18 +51,18 @@
 
     window.DOMTokenList = DOMTokenList;
 
-    function defineElementGetter(obj, prop, getter){
-        if(Object.defineProperty){
-            Object.defineProperty(obj, prop,{
+    function defineElementGetter(obj, prop, getter) {
+        if (Object.defineProperty) {
+            Object.defineProperty(obj, prop, {
                 get: getter
             });
         }
-        else{
+        else {
             obj.__defineGetter__(prop, getter);
         }
     }
 
-    defineElementGetter(HTMLElement.prototype, 'classList', function(){
+    defineElementGetter(HTMLElement.prototype, 'classList', function () {
         return new DOMTokenList(this);
     });
 })();
