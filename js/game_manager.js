@@ -32,7 +32,7 @@ GameManager.prototype.setup = function(){
     var previousState = this.storageManager.getGameState();
 
     if(previousState){
-        this.grid = new this.grid(previousState.grid.size, previousState.grid.cells);
+        this.grid = new Grid(previousState.grid.size, previousState.grid.cells);
         this.score = previousState.score;
         this.over = previousState.over;
         this.won = previousState.won;
@@ -238,4 +238,4 @@ GameManager.prototype.tileMatchesAvailable = function(){
 
 GameManager.prototype.positionsEqual = function(first, second){
     return first.x === second.x && first.y === second.y;
-}
+};

@@ -10,7 +10,7 @@
         <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> 
         <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)">
 
-        <meta name="HandheldFriendly" content="true">
+        <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
     </head>
@@ -24,7 +24,11 @@
                     <div class="best-container">0</div>
                 </div>
             </div>
-        </div>
+            
+            <div class="above-game">
+                <p class = "game-intro"> Join the numbers and get to the <strong>2048 tile!</strong></p>
+                <a class = "restart-button">New Game</a>
+            </div>
 
         <div class="game-container">
             <div class="game-message">
@@ -62,7 +66,7 @@
                 </div>
             </div>
 
-            <div class="tite-container">
+            <div class="tile-container">
 
             </div>
         </div>
@@ -71,8 +75,9 @@
             <strong class="important">How to play:</strong>Use your <strong>arrow keys</strong> to move the tiles.<strong>Merge</strong> them into one!
         </p>
         <hr>
+    </div>
 
-        <script src="js/bind-polyfill.js"></script>
+        <script src="js/bind _polyfill.js"></script>
         <script src="js/classlist_polyfill.js"></script>
         <script src="js/animframe_polyfill.js"></script>
         <script src="js/keyboard_input_manager.js"></script>
