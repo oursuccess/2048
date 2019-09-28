@@ -229,12 +229,12 @@ hr{
     display: none;
 }
 
-.game-container .gamemessage.game-won{
+.game-container .game-message.game-won{
     background: rgba(237, 194, 46, 0.5);
     color: #f9f6f2;
 }
 
-.game-container .game-message .game-won a .keep-playing-button{
+.game-container .game-message.game-won a.keep-playing-button{
     display: inline-block;
 }
 
@@ -285,7 +285,7 @@ hr{
     line-height: 107px;
 }
 
-.tile.tile.position-1-1{
+.tile.tile-position-1-1{
     -webkit-transform: translate(0px, 0px);
     -moz-transform: translate(0px, 0px);
     -ms-transform: translate(0px, 0px);
@@ -389,6 +389,7 @@ hr{
     transition: 100ms ease-in-out;
     -webkit-transition-property: -webkit-transform;
     -moz-transition-property: -moz-transform;
+    transition-property: transform;
 }
 
 .tile .tile-inner{

@@ -19,7 +19,7 @@ KeyboardInputManager.prototype.on = function(event, callback){
     if(!this.events[event]){
         this.events[event] = [];
     }
-    this.events[evnet].push(callback);
+    this.events[event].push(callback);
 };
 
 KeyboardInputManager.prototype.emit = function(event, data){
@@ -110,7 +110,7 @@ KeyboardInputManager.prototype.listen = function(){
         }
 
         var dx = touchEndClientX - touchStartClientX;
-        var absDx = math.abs(dx);
+        var absDx = Math.abs(dx);
 
         var dy = touchEndClientY - touchStartClientY;
         var absDy = Math.abs(dy);
@@ -134,5 +134,5 @@ KeyboardInputManager.prototype.keepPlaying = function(event){
 KeyboardInputManager.prototype.bindButtonPress = function(selector, fn){
     var button = document.querySelector(selector);
     button.addEventListener("click", fn.bind(this));
-    button.addEventListener(this.eventTouched, fn.bind(this));
+    button.addEventListener(this.eventTouchend, fn.bind(this));
 }

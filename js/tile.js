@@ -3,15 +3,15 @@ function Tile(position, value){
     this.y = position.y;
     this.value = value || 2;
 
-    this.previousPostion = null;
+    this.previousPosition = null;
     this.mergedFrom = null;
 }
 
-Tile.prototype.savePostion = function(){
-    this.previousPostion = {x: this.x, y: this.y};
+Tile.prototype.savePosition = function(){
+    this.previousPosition = {x: this.x, y: this.y};
 };
 
-Tile.prototype.updatePostion = function(position){
+Tile.prototype.updatePosition = function(position){
     this.x = position.x;
     this.y = position.y;
 };

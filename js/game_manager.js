@@ -59,7 +59,7 @@ GameManager.prototype.addStartTiles = function(){
 
 GameManager.prototype.addRandomTile = function(){
     if(this.grid.cellsAvailable()){
-        var value = Math.random() < 0.9? 2 : 4; //修改这里
+        var value = Math.random() < 0.9 ? 2 : 4; //修改这里
         var tile = new Tile(this.grid.randomAvailableCell(), value);
 
         this.grid.insertTile(tile);
@@ -84,7 +84,7 @@ GameManager.prototype.actuate = function(){
         won: this.won,
         bestScore: this.storageManager.getBestScore(),
         terminated: this.isGameTerminated()
-    })
+    });
 };
 
 GameManager.prototype.serialize = function(){
@@ -171,23 +171,23 @@ GameManager.prototype.getVector = function(direction){
     var map = {
         0: {x: 0, y: -1},
         1: {x: 1, y: 0},
-        2: {x:0, y:1},
-        3: {x:-1, y: 0}
+        2: {x: 0, y: 1},
+        3: {x: -1, y: 0}
     };
 
     return map[direction];
 };
 
 GameManager.prototype.buildTraversals = function(vector){
-    var traversals = {x:[], y:[] };
+    var traversals = {x: [], y: []};
 
     for(var pos = 0; pos < this.size; pos++){
         traversals.x.push(pos);
         traversals.y.push(pos);
     }
 
-    if(vector.x == 1) traversals.x = traversals.x.reverse();
-    if(vector.y == 1) traversals.y = traversals.y.reverse();
+    if(vector.x === 1) traversals.x = traversals.x.reverse();
+    if(vector.y === 1) traversals.y = traversals.y.reverse();
 
     return traversals;
 };
@@ -225,7 +225,7 @@ GameManager.prototype.tileMatchesAvailable = function(){
 
                     var other = self.grid.cellContent(cell);
 
-                    if(other && other.value == tile.value){
+                    if(other && other.value === tile.value){
                         return true;
                     }
                 }

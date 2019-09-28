@@ -30,7 +30,7 @@ Grid.prototype.fromState = function(state){
     }
 
     return cells;
-}
+};
 
 Grid.prototype.randomAvailableCell = function(){
     var cells = this.availableCells();
