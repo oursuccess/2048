@@ -49,7 +49,7 @@ HTMLActuator.prototype.addTile = function (tile) {
     var self = this;
     var wrapper = document.createElement("div");
     var inner = document.createElement("div");
-    var position = tile.previousPosition || {x: tile.x, y: tile.y};
+    var position = tile.previousPosition || { x: tile.x, y: tile.y };
     var positionClass = this.positionClass(position);
 
     var classes = ["tile", "tile-" + tile.value, positionClass];
@@ -119,7 +119,7 @@ HTMLActuator.prototype.updateBestScore = function (bestScore) {
 
 HTMLActuator.prototype.message = function (won) {
     var type = won ? "game-won" : "game-over";
-    var message = won ? "You Win!" : "Game over!";
+    var message = won ? "You win!" : "Game over!";
 
     this.messageContainer.classList.add(type);
     this.messageContainer.getElementsByTagName("p")[0].textContent = message;

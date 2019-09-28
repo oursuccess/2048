@@ -94,7 +94,7 @@ KeyboardInputManager.prototype.listen = function () {
     });
 
     gameContainer.addEventListener(this.eventTouchend, function (event) {
-        if((!window.navigator.msPointerEnabled && event.touches.length > 0) || event.targetTouches.length > 0) {
+        if ((!window.navigator.msPointerEnabled && event.touches.length > 0) || event.targetTouches.length > 0) {
             return;
         }
 
