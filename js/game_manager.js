@@ -175,25 +175,25 @@ GameManager.prototype.move = function (direction) {
                     self.moveTile(tile, positions.farthest);
                     switch (tile.value) {
                         case 7:
-                            self.grid.mergeTwo(tile, direction);
+                            self.mergeTwo(tile, direction);
                             break;
                         case 9:
-                            self.grid.mergeAny(tile, direction);
+                            self.mergeAny(tile, direction);
                             break;
                         case 77:
-                            self.grid.mergeCol(tile);
+                            self.mergeCol(tile);
                             break;
                         case 777:
-                            self.grid.mergeCross(tile);
+                            self.mergeCross(tile);
                             break;
                         case 233:
-                            self.grid.mergeANum();
+                            self.mergeANum();
                             break;
                         case 666:
-                            self.grid.mergeDiag(tile);
+                            self.mergeDiag(tile);
                             break;
                         case 999:
-                            self.grid.boom3x3(tile);
+                            self.boom3x3(tile);
                             break;
                     }
                     self.grid.removeTile(tile);
@@ -304,4 +304,12 @@ GameManager.prototype.tileMatchesAvailable = function () {
 
 GameManager.prototype.positionsEqual = function (first, second) {
     return first.x === second.x && first.y === second.y;
+};
+
+GameManager.prototype.mergeCol = function (tile) {
+    var self = this;
+    var value;
+    for(x = 0; x < self.grid.size; x++){
+        value += self.grid[tile.x][x];
+    }
 };

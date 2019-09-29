@@ -108,35 +108,3 @@ Grid.prototype.serialize = function () {
         cells: cellState
     };
 };
-
-Grid.prototype.mergeCol = function () {
-
-};
-
-Grid.prototype.mergeRow = function () {
-
-};
-
-Grid.prototype.mergeDiag = function () {
-
-};
-
-Grid.prototype.boom3x3 = function () {
-
-};
-
-Grid.prototype.mergeTwo = function (tile, direction) {
-
-};
-
-Grid.prototype.mergeCross = function (tile) {
-
-};
-
-Grid.prototype.mergeAny = function (tile, direction) {
-
-};
-
-Grid.prototype.mergeANum = function () {
-
-};
