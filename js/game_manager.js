@@ -85,17 +85,17 @@ GameManager.prototype.addStaticTile = function (moveable) {
 GameManager.prototype.addPowerupTile = function () {
     //添加可以具有随机效果的奖励方块，在玩家移动后触发相应效果
     //999: 将3*3范围内的方格消除，并生成这些方格之和（向上取2的幂次整数，下同）
-    //666: 消除对角线区域，并在原地生成1024
+    //666: 变为一个不超过当前最大有效数字2倍的数 
     //233: 随机消除某一数字的所有方块，返回这些方格之和
     //777: 消除本数字的整行整列，在原地生成这些方格的和
     //77: 消除本数字的整行或整列（玩家选择），在原地生成对应的和或7系列的其它数字
-    //11: 变为一个不超过当前最大有效数字2倍的
     //9: 可与任意数字合并，合并后转变为2的对应幂次
-    //7: 合并指定方向上的两格数字
+    //7: 消除指定方向上的至多两格数字
     
     if (this.grid.cellsAvailable) {
-        var values = [7, 9, 77, 777, 233, 666, 999];
-        var value = values[Math.floor(Math.random() * values.length)];
+        //var values = [7, 9, 77, 777, 233, 666, 999];
+        //var value = values[Math.floor(Math.random() * values.length)];
+        var value = 233;
         var isPowerup = true;
         var tile = new Tile(this.grid.randomAvailableCell(), value, true, isPowerup);
         this.grid.insertTile(tile);
@@ -176,10 +176,29 @@ GameManager.prototype.move = function (direction) {
                     //self.moveTile(tile, positions.farthest);
                     switch (tile.value) {
                         case 7:
+                            var cell = {x: tile.x, y: tile.y};
+                            var previous;
+                            var i = 0;
+                            do {
+                                previous = cell;
+                                cell = {x: previous.x + vector.x, y: previous.y + vector.y};
+                                if (self.grid.cellOccupied(cell)) {
+                                    self.grid.removeTile(cell);
+                                    i++;
+                                    tile.isPowerup = false;
+                                }
+                            } while (i < 1 && self.grid.withinBounds(cell));
+                            self.grid.removeTile(tile);
                             break;
                         case 9:
-                            if (next && !next.isPowerup) {
+                            if (next && !next.isPowerup && !next.mergedFrom) {
                                 tile.value = next.value;
+                                var merged = new Tile(positions.next, tile.value * 2);
+                                merged.mergedFrom = [tile, next];
+
+                                self.grid.insertTile(merged);
+                                self.grid.removeTile(tile);
+                                tile.updatePosition(positions.next);
                             }
                             break;
                         case 77:
@@ -190,20 +209,21 @@ GameManager.prototype.move = function (direction) {
                             }
                             break;
                         case 777:
-                            self.mergeColRow(tile, positions.next);
+                            self.mergeColRow(tile);
                             break;
                         case 233:
+                            self.mergeANum(tile, position.farthest);
                             break;
-                            //self.mergeANum();
                         case 666:
+                            self.selfChange(tile);
                             break;
-                            //self.mergeDiag(tile);
                         case 999:
-                            //self.boom3x3(tile);
+                            self.boom3x3(tile);
                             break;
                         default:
                                 break;
                     }
+                    if (merged.value >= 2048) self.won = true;
                     moved = true;
                 }
                 else if (next && next.value === tile.value && !next.mergedFrom) {
@@ -217,7 +237,7 @@ GameManager.prototype.move = function (direction) {
 
                     self.score += merged.value;
 
-                    if (merged.value === 2048) self.won = true;
+                    if (merged.value >= 2048) self.won = true;
                 }
                 else {
                     self.moveTile(tile, positions.farthest);
@@ -330,10 +350,11 @@ GameManager.prototype.mergeCol = function (tile, position) {
 
     var powered = new Tile(position, value);
     this.grid.insertTile(powered);
+    tile.updatePosition(position);
 };
 
 
-GameManager.prototype.mergeRow = function (tile, postion) {
+GameManager.prototype.mergeRow = function (tile, position) {
     var value = -tile.value;
 
     for (var y = 0; y < this.size; y++) {
@@ -348,13 +369,15 @@ GameManager.prototype.mergeRow = function (tile, postion) {
 
     var powered = new Tile(position, value);
     this.grid.insertTile(powered);
+    tile.updatePosition(position);
 };
 
-GameManager.prototype.mergeColRow = function (tile, position) {
+GameManager.prototype.mergeColRow = function (tile) {
     var value = -tile.value;
+    var position = {x: tile.x, y: tile.y};
 
     for (var y = 0; y < this.size; y++) {
-        var cell = {x: tile.x, y: y};
+        var cell = {x: position.x, y: y};
         if (this.grid.cellOccupied(cell)) {
             value += this.grid.cellContent(cell).value;
             this.grid.removeTile(cell);
@@ -362,7 +385,7 @@ GameManager.prototype.mergeColRow = function (tile, position) {
     }
 
     for (var x = 0; x < this.size; x++) {
-        var cell = {x: tile.x, y: y};
+        var cell = {x: x, y: position.y};
 
         if (this.grid.cellOccupied(cell)) {
             value += this.grid.cellContent(cell).value;
@@ -374,4 +397,74 @@ GameManager.prototype.mergeColRow = function (tile, position) {
 
     var powered = new Tile(position, value);
     this.grid.insertTile(powered);
+    tile.updatePosition(position);
+};
+
+GameManager.prototype.mergeANum = function(tile, position) {
+    var values = [];
+    for (var x = 0; x < this.size; x++) {
+        for (var y = 0; y < this.size; y++) {
+            var cell = {x: x, y: y};
+            if (this.grid.cellOccupied(cell)) {
+                values.push(this.grid.cellContent(cell).value);
+            }
+        }
+    }
+
+    if (values.length) {
+        var keyValue = values[Math.floor(Math.random() * values.length)];
+        var value = 0;
+
+        for (var x = 0; x < this.size; x++) {
+            for (var y = 0; y < this.size; y++) {
+                var cell = { x: x, y: y };
+                if (this.grid.cellOccupied(cell) && this.grid.cellContent(cell).value === keyValue) {
+                    value += this.grid.cellContent(cell).value;
+                    this.grid.removeTile(cell);
+                }
+            }
+        }
+
+        this.grid.removeTile(tile);
+        value = Math.pow(2, Math.ceil(Math.log2(value)));
+
+        var powered = new Tile(position, value);
+        this.grid.insertTile(powered);
+        tile.updatePosition(position);
+    }
+};
+
+GameManager.prototype.selfChange = function (tile, postion) {
+    var value = this.grid.maxValue();
+    value = Math.pow(2, Math.floor(Math.random * Math.log2(value * 2)));
+
+    var powered = new Tile(position, value);
+
+    this.grid.removeTile(tile);
+    this.grid.insertTile(powered);
+    tile.updatePosition(position);
+};
+
+GameManager.prototype.boom3x3 = function (tile, position) {
+    var value = 0;
+    var xMin = Math.max(0, position.x - 1);
+    var xMax = Math.min(this.size, position.x + 2);
+    var yMin = Math.max(0, position.y - 1);
+    var yMax = Math.min(this.size, position.y + 2);
+    for(var x = xMin; x < xMax; x++){
+        for(var y = yMin; y < yMax; y++){
+            var cell = {x:x, y:y};
+            if(this.grid.cellOccupied(cell)){
+                value += this.grid.cellContent(cell).value;
+                this.grid.removeTile(cell);
+            }
+        }
+    }
+
+    //this.grid.removeTile(tile);
+    value = Math.pow(2, Math.ceil(Math.log2(value)));
+
+    var powered = new Tile(position, value);
+    this.grid.insertTile(powered);
+    tile.updatePosition(position);
 };
