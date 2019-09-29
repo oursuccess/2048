@@ -178,9 +178,16 @@ GameManager.prototype.move = function (direction) {
                         case 7:
                             break;
                         case 9:
+                            if (next && !next.isPowerup) {
+                                tile.value = next.value;
+                            }
                             break;
                         case 77:
-                            self.mergeCol(tile, positions.next);
+                            if (vector.x !== 0) {
+                                self.mergeCol(tile, positions.next);
+                            } else {
+                                self.mergeRow(tile, positions.next);
+                            }
                             break;
                         case 777:
                             self.mergeColRow(tile, positions.next);
