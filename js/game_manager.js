@@ -84,11 +84,11 @@ GameManager.prototype.addStaticTile = function (moveable) {
 
 GameManager.prototype.addPowerupTile = function () {
     //添加可以具有随机效果的奖励方块，在玩家移动后触发相应效果
-    //999: 将3*3范围内的方格消除，并生成这些方格之和（向下取2的幂次整数，下同）
+    //999: 将3*3范围内的方格消除，并生成这些方格之和（向上取2的幂次整数，下同）
     //666: 消除对角线区域，并在原地生成1024
     //233: 随机消除某一数字的所有方块，返回这些方格之和
     //777: 消除本数字的整行整列，在原地生成这些方格的和
-    //77: 消除本数字的整行，在原地生成对应的和或7系列的其它数字
+    //77: 消除本数字的整行或整列（玩家选择），在原地生成对应的和或7系列的其它数字
     //11: 变为一个不超过当前最大有效数字2倍的
     //9: 可与任意数字合并，合并后转变为2的对应幂次
     //7: 合并指定方向上的两格数字
@@ -96,7 +96,8 @@ GameManager.prototype.addPowerupTile = function () {
     if (this.grid.cellsAvailable) {
         var values = [7, 9, 77, 777, 233, 666, 999];
         var value = values[Math.floor(Math.random() * values.length)];
-        var tile = new Tile(this.grid.randomAvailableCell(), value);
+        var isPowerup = true;
+        var tile = new Tile(this.grid.randomAvailableCell(), value, true, isPowerup);
         this.grid.insertTile(tile);
     }
 };
@@ -171,32 +172,37 @@ GameManager.prototype.move = function (direction) {
                 var next = self.grid.cellContent(positions.next);
 
                 //检验是否为奖励块
-                if (tile.value % 2 === 1 || tile.value === 666) {
-                    self.moveTile(tile, positions.farthest);
+                if (tile.isPowerup) {
+                    //self.moveTile(tile, positions.farthest);
                     switch (tile.value) {
                         case 7:
-                            self.mergeTwo(tile, direction);
+                            self.mergeCol(tile, positions.farthest);
                             break;
                         case 9:
-                            self.mergeAny(tile, direction);
+                            self.mergeCol(tile, positions.farthest);
                             break;
                         case 77:
-                            self.mergeCol(tile);
+                            self.mergeCol(tile, positions.farthest);
                             break;
                         case 777:
-                            self.mergeCross(tile);
+                            self.mergeCol(tile,positions.farthest);
                             break;
                         case 233:
-                            self.mergeANum();
+                            self.mergeCol(tile, positions.farthest);
                             break;
+                            //self.mergeANum();
                         case 666:
-                            self.mergeDiag(tile);
+                            self.mergeCol(tile, positions.farthest);
                             break;
+                            //self.mergeDiag(tile);
                         case 999:
-                            self.boom3x3(tile);
+                            //self.boom3x3(tile);
+                            self.mergeCol(tile, positions.farthest);
                             break;
+                        default:
+                                break;
                     }
-                    self.grid.removeTile(tile);
+
                 }
                 else if (next && next.value === tile.value && !next.mergedFrom) {
                     var merged = new Tile(positions.next, tile.value * 2 );
@@ -306,10 +312,20 @@ GameManager.prototype.positionsEqual = function (first, second) {
     return first.x === second.x && first.y === second.y;
 };
 
-GameManager.prototype.mergeCol = function (tile) {
+GameManager.prototype.mergeCol = function (tile, position) {
     var self = this;
-    var value;
-    for(x = 0; x < self.grid.size; x++){
-        value += self.grid[tile.x][x];
+    var value = -tile.value;
+
+    for (var x = 0; x < this.size; x++) {
+        var cell = {x: x, y: tile.y};
+        if (this.grid.cellOccupied(cell)) {
+            value += this.grid.cellContent(cell).value;
+            this.grid.removeTile(cell);
+        }
     }
+    
+    value = Math.pow(2, Math.ceil(Math.log2(value)));
+    
+    var merged = new Tile(position, value);
+    self.grid.insertTile(merged);
 };
