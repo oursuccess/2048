@@ -66,7 +66,7 @@ GameManager.prototype.addStartTiles = function () {
 
 GameManager.prototype.addRandomTile = function () {
     if (this.grid.cellsAvailable()) {
-        var value = Math.random() < 0.9 ? 2 : 4; //修改这里
+        var value = Math.random() < 0.9 ? 2 : 4; 
         var tile = new Tile(this.grid.randomAvailableCell(), value);
 
         this.grid.insertTile(tile);
@@ -82,9 +82,31 @@ GameManager.prototype.addStaticTile = function (moveable) {
     }
 };
 
+GameManager.prototype.addPowerupTile = function () {
+    //添加可以具有随机效果的奖励方块，在玩家移动后触发相应效果
+    //999: 将3*3范围内的方格消除，并生成这些方格之和（向下取2的幂次整数，下同）
+    //666: 消除对角线区域，并在原地生成1024
+    //233: 随机消除某一数字的所有方块，返回这些方格之和
+    //777: 消除本数字的整行整列，在原地生成这些方格的和
+    //77: 消除本数字的整行，在原地生成对应的和或7系列的其它数字
+    //11: 变为一个不超过当前最大有效数字2倍的
+    //9: 可与任意数字合并，合并后转变为2的对应幂次
+    //7: 合并指定方向上的两格数字
+    
+    if (this.grid.cellsAvailable) {
+        var values = [7, 9, 77, 777, 233, 666, 999];
+        var value = values[Math.floor(Math.random() * values.length)];
+        var tile = new Tile(this.grid.randomAvailableCell(), value);
+        this.grid.insertTile(tile);
+    }
+};
+
 GameManager.prototype.actuate = function () {
     if (this.storageManager.getBestScore() < this.score) {
         this.storageManager.setBestScore(this.score);
+        if (!this.over) {
+            this.addPowerupTile();
+        }
     }
 
     if (this.over) {
@@ -148,7 +170,35 @@ GameManager.prototype.move = function (direction) {
                 var positions = self.findFarthestPosition(cell, vector);
                 var next = self.grid.cellContent(positions.next);
 
-                if (next && next.value === tile.value && !next.mergedFrom) {
+                //检验是否为奖励块
+                if (tile.value % 2 === 1 || tile.value === 666) {
+                    self.moveTile(tile, positions.farthest);
+                    switch (tile.value) {
+                        case 7:
+                            self.grid.mergeTwo(tile, direction);
+                            break;
+                        case 9:
+                            self.grid.mergeAny(tile, direction);
+                            break;
+                        case 77:
+                            self.grid.mergeCol(tile);
+                            break;
+                        case 777:
+                            self.grid.mergeCross(tile);
+                            break;
+                        case 233:
+                            self.grid.mergeANum();
+                            break;
+                        case 666:
+                            self.grid.mergeDiag(tile);
+                            break;
+                        case 999:
+                            self.grid.boom3x3(tile);
+                            break;
+                    }
+                    self.grid.removeTile(tile);
+                }
+                else if (next && next.value === tile.value && !next.mergedFrom) {
                     var merged = new Tile(positions.next, tile.value * 2 );
                     merged.mergedFrom = [tile, next];
 
@@ -165,7 +215,7 @@ GameManager.prototype.move = function (direction) {
                     self.moveTile(tile, positions.farthest);
                 }
 
-                if (!self.positionsEqual(cell, tile)) {
+                if (!tile || !self.positionsEqual(cell, tile)) {
                     moved = true;
                 }
             }
@@ -173,7 +223,7 @@ GameManager.prototype.move = function (direction) {
     });
 
     if (moved) { 
-        this.addRandomTile(); //修改这里
+        this.addRandomTile();
 
         if (!this.movesAvailable()) {
             this.over = true;
@@ -234,7 +284,7 @@ GameManager.prototype.tileMatchesAvailable = function () {
         for (var y = 0; y < this.size; y++) {
             tile = this.grid.cellContent({ x: x, y: y });
 
-            if (tile) {
+            if (tile && tile.value % 2 === 0 && tile.value !== 666) {
                 for (var direction = 0; direction < 4; direction++) {
                     var vector = self.getVector(direction);
                     var cell = { x: x + vector.x, y: y + vector.y };

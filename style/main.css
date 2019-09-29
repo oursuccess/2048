@@ -336,6 +336,42 @@ hr {
     background: #353535;
     color: #ff0000;
     box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0), inset 0 0 0 1px rgba(255, 255, 255, 0); }
+  .tile.tile-7 .tile-inner{
+    color: #edc850;
+    background: #00ffff;
+    font-size: 25px;
+  }
+  .tile.tile-9 .tile-inner{
+    color: #edc850;
+    background: #00ffff;
+    font-size: 25px;
+  }
+  .tile.tile-77 .tile-inner{
+    color: #edc850;
+    background: #00ffff;
+    font-size: 25px;
+  }
+  .tile.tile-777 .tile-inner{
+    color: #edc850;
+    background: #00ffff;
+    font-size: 25px;
+  }
+  .tile.tile-233 .tile-inner{
+    color: #edc850;
+    background: #00ffff;
+    font-size: 25px;
+  }
+  .tile.tile-666 .tile-inner{
+    color: #edc850;
+    background: #00ffff;
+    font-size: 25px;
+  }
+  .tile.tile-999 .tile-inner{
+    color: #edc850;
+    background: #00ffff;
+    font-size: 25px;
+  }
+
   .tile.tile-2 .tile-inner {
     background: #eee4da;
     box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0), inset 0 0 0 1px rgba(255, 255, 255, 0); }
