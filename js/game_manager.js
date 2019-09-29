@@ -52,6 +52,13 @@ GameManager.prototype.setup = function () {
 };
 
 GameManager.prototype.addStartTiles = function () {
+    //在开局添加随机的不可合并的方块
+    if (Math.random() < 0.5) {
+        this.addStaticTile(false);
+    }
+    else if (Math.random() < 0.5) {
+        this.addStaticTile(true);
+    }
     for (var i = 0; i < this.startTiles; i++) {
         this.addRandomTile();
     }
@@ -61,6 +68,15 @@ GameManager.prototype.addRandomTile = function () {
     if (this.grid.cellsAvailable()) {
         var value = Math.random() < 0.9 ? 2 : 4; //修改这里
         var tile = new Tile(this.grid.randomAvailableCell(), value);
+
+        this.grid.insertTile(tile);
+    }
+};
+
+GameManager.prototype.addStaticTile = function (moveable) {
+    if (this.grid.cellsAvailable()) {
+        var value = moveable ? 3 : 1;
+        var tile = new Tile(this.grid.randomAvailableCell(), value, moveable);
 
         this.grid.insertTile(tile);
     }
@@ -128,12 +144,12 @@ GameManager.prototype.move = function (direction) {
             cell = { x: x, y: y };
             tile = self.grid.cellContent(cell);
 
-            if (tile) {
+            if (tile && tile.moveable) {
                 var positions = self.findFarthestPosition(cell, vector);
                 var next = self.grid.cellContent(positions.next);
 
                 if (next && next.value === tile.value && !next.mergedFrom) {
-                    var merged = new Tile(positions.next, tile.value * 2);
+                    var merged = new Tile(positions.next, tile.value * 2 );
                     merged.mergedFrom = [tile, next];
 
                     self.grid.insertTile(merged);

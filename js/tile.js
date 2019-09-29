@@ -1,10 +1,12 @@
-function Tile(position, value) {
+function Tile(position, value, moveable = true) {
     this.x = position.x;
     this.y = position.y;
     this.value = value || 2;
 
     this.previousPosition = null;
     this.mergedFrom = null;
+    
+    this.moveable = moveable;
 }
 
 Tile.prototype.savePosition = function () {
