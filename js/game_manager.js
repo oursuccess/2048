@@ -10,6 +10,8 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
     this.inputManager.on("restart", this.restart.bind(this));
     this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
 
+    this.values = [7,9];
+
     this.setup();
 }
 
@@ -77,11 +79,12 @@ GameManager.prototype.addRandomTile = function () {
         }
         else {
             var value = Math.random() < 0.7 ? 2 : 4; 
-            if (Math.random() + this.score / (this.storageManager.getBestScore() * 2 + 49600)> 0.95) {
+            if (this.won && Math.random() + this.score / (this.storageManager.getBestScore() * 2 + 49600)> 0.95) {
                 
                 value = 2 * Math.floor(Math.random() * 1024 % 512) + 1;
-                var values = [7, 9, 77, 777, 233, 999];
-                if (values.includes(value)) {
+                //var values = [7, 9, 77, 777, 233, 999];
+
+                if (this.values.includes(value)) {
                     value += 4;
                 }
                 var tile = new Tile(this.grid.randomAvailableCell(), value, true, false, false);
@@ -115,8 +118,8 @@ GameManager.prototype.addPowerupTile = function () {
     //7: 消除指定方向上的1格数字
     
     if (this.grid.cellsAvailable) {
-        var values = [7, 9, 77, 777, 233, 666, 999];
-        var value = values[Math.floor(Math.random() * values.length)];
+        //var values = [7, 9, 77, 777, 233, 666, 999];
+        var value = this.values[Math.floor(Math.random() * this.values.length)];
         var isPowerup = true;
         var canMerge = false;
         var tile = new Tile(this.grid.randomAvailableCell(), value, true, isPowerup, canMerge);
@@ -183,6 +186,7 @@ GameManager.prototype.move = function (direction) {
     var traversals = this.buildTraversals(vector);
     var moved = false;
     var powerHandled = false;
+    var powerupUped = false;
 
     this.prepareTiles();
 
@@ -282,6 +286,10 @@ GameManager.prototype.move = function (direction) {
         if (this.won) {
             this.randomDivideCell();
             this.targetScore = this.storageManager.getBestScore() < 1024 ? 1024 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore()))) / 2;
+            if(!powerupUped){
+                this.values.push(77,777, 233, 666, 999);
+                powerupUped = true;
+            }
         }
         this.addRandomTile();
 
@@ -381,6 +389,7 @@ GameManager.prototype.mergeCol = function (tile) {
     }
 
     value = Math.pow(2, Math.ceil(Math.log2(value)));
+    value /= 1 + Math.round(Math.random());
 
     var powered = new Tile(position, value);
     this.grid.insertTile(powered);
@@ -403,6 +412,7 @@ GameManager.prototype.mergeRow = function (tile) {
     }
 
     value = Math.pow(2, Math.ceil(Math.log2(value)));
+    value /= 1 + Math.round(Math.random());
 
     var powered = new Tile(position, value);
     this.grid.insertTile(powered);
@@ -435,6 +445,7 @@ GameManager.prototype.mergeColRow = function (tile) {
     }
 
     value = Math.pow(2, Math.ceil(Math.log2(value)));
+    value = 1 + Math.round(Math.random());
 
     var powered = new Tile(position, value);
     this.grid.insertTile(powered);
