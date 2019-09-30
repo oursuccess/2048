@@ -90,12 +90,12 @@ GameManager.prototype.addPowerupTile = function () {
     //777: 消除本数字的整行整列，在原地生成这些方格的和
     //77: 消除本数字的整行或整列（玩家选择），在原地生成对应的和或7系列的其它数字
     //9: 可与任意数字合并，合并后转变为2的对应幂次
-    //7: 消除指定方向上的至多两格数字
+    //7: 消除指定方向上的1格数字
     
     if (this.grid.cellsAvailable) {
         //var values = [7, 9, 77, 777, 233, 666, 999];
         //var value = values[Math.floor(Math.random() * values.length)];
-        var value = 233;
+        var value = 9;
         var isPowerup = true;
         var tile = new Tile(this.grid.randomAvailableCell(), value, true, isPowerup);
         this.grid.insertTile(tile);
@@ -159,6 +159,7 @@ GameManager.prototype.move = function (direction) {
     var vector = this.getVector(direction);
     var traversals = this.buildTraversals(vector);
     var moved = false;
+    var powerupHandled = false;
 
     this.prepareTiles();
 
