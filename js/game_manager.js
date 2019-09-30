@@ -495,16 +495,11 @@ GameManager.prototype.selfChange = function (tile) {
 };
 
 GameManager.prototype.maxValue = function () {
-    var max;
-    this.grid.x.forEach(function (x) {
-        this.grid.y.forEach(function (y){
-            cell = {x: x, y: y};
-            tile = this.grid.cellContent(cell);
-
-            if(tile && tile.value > max){
-                max = tile.value;
-            }
-        });
+    var max = 0;
+    this.grid.eachCell(function (x, y, tile) {
+        if(tile && !tile.isPowerup && tile.value > max) {
+            max = tile.value;
+        }
     });
     return max;
 };
