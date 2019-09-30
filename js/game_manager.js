@@ -159,7 +159,6 @@ GameManager.prototype.move = function (direction) {
     var vector = this.getVector(direction);
     var traversals = this.buildTraversals(vector);
     var moved = false;
-    var powerupHandled = false;
 
     this.prepareTiles();
 
@@ -174,7 +173,19 @@ GameManager.prototype.move = function (direction) {
 
                 //检验是否为奖励块
                 if (tile.isPowerup) {
+                    if (tile.value == 9) {
+                        if (next && !next.isPowerup && !next.mergedFrom) {
+                            tile.value = next.value;
+                            var merged = new Tile(positions.next, tile.value * 2);
+                            merged.mergedFrom = [tile, next];
+
+                            self.grid.insertTile(merged);
+                            self.grid.removeTile(tile);
+                            tile.updatePosition(positions.next);
+                            }
+                    }
                     //self.moveTile(tile, positions.farthest);
+                    /*
                     switch (tile.value) {
                         case 7:
                             var cell = {x: tile.x, y: tile.y};
@@ -226,6 +237,7 @@ GameManager.prototype.move = function (direction) {
                     }
                     if (merged.value >= 2048) self.won = true;
                     moved = true;
+                    */
                 }
                 else if (next && next.value === tile.value && !next.mergedFrom) {
                     var merged = new Tile(positions.next, tile.value * 2 );
