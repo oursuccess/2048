@@ -108,16 +108,3 @@ Grid.prototype.serialize = function () {
         cells: cellState
     };
 };
-
-Grid.prototype.maxValue = function () {
-    var max = 2;
-    for(var x = 0; x < this.size; x++) {
-        for (var y = 0; y < this.size; y++) {
-            if(this.cells[x][y] && this.cells[x][y].value > max){
-                max = this.cells[x][y].value;
-            }
-        }
-    }
-
-    return max;
-}

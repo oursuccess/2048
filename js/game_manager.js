@@ -95,7 +95,7 @@ GameManager.prototype.addPowerupTile = function () {
     if (this.grid.cellsAvailable) {
         //var values = [7, 9, 77, 777, 233, 666, 999];
         //var value = values[Math.floor(Math.random() * values.length)];
-        var value = 777;
+        var value = 666;
         var isPowerup = true;
         var tile = new Tile(this.grid.randomAvailableCell(), value, true, isPowerup);
         this.grid.insertTile(tile);
@@ -213,7 +213,7 @@ GameManager.prototype.move = function (direction) {
 
                     }
                     else if (tile.value === 666) {
-
+                        self.selfChange(tile);
                     }
                     else if (tile.value === 999) {
 
@@ -482,15 +482,31 @@ GameManager.prototype.mergeANum = function(tile, position) {
     }
 };
 
-GameManager.prototype.selfChange = function (tile, postion) {
-    var value = this.grid.maxValue();
-    value = Math.pow(2, Math.floor(Math.random * Math.log2(value * 2)));
+GameManager.prototype.selfChange = function (tile) {
+    var position = {x: tile.x, y: tile.y};
+    var value = this.maxValue();
+    value = Math.pow(2, Math.floor(Math.random() * Math.log2(value * 2)));
 
-    var powered = new Tile(position, value);
+    var powered = new Tile(position, value, value === 1 ? false : true);
 
     this.grid.removeTile(tile);
     this.grid.insertTile(powered);
     tile.updatePosition(position);
+};
+
+GameManager.prototype.maxValue = function () {
+    var max;
+    this.grid.x.forEach(function (x) {
+        this.grid.y.forEach(function (y){
+            cell = {x: x, y: y};
+            tile = this.grid.cellContent(cell);
+
+            if(tile && tile.value > max){
+                max = tile.value;
+            }
+        });
+    });
+    return max;
 };
 
 GameManager.prototype.boom3x3 = function (tile, position) {
