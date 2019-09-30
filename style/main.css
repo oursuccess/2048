@@ -618,6 +618,7 @@ hr {
     width: 55%;
     display: block;
     box-sizing: border-box;
+    font-weight: bold;
     line-height: 1.65;} 
 
   .restart-button {

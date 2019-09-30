@@ -29,7 +29,7 @@
             
             <div class="above-game">
                 <p class="game-intro">Join the numbers and get to the </p>
-                <p class = "game-targetScore" ><strong> 2048 </strong></p>
+                <p class = "game-targetScore" id = "targetScore" ><strong> 0 </strong></p>
                 <p class = "game-intro" > tile!</p>
                 <a class="restart-button">New Game</a>
             </div>
@@ -77,6 +77,39 @@
 
         <p class="game-explanation">
             <strong class="important">How to play:</strong>Use your <strong>arrow keys</strong> to move the tiles.<strong>Merge</strong> them into one!
+        </p>
+        <p class="game-explanation">
+            <strong>Bad Cells:</strong>:
+        </p>
+        <p class="game-explanation-content">
+            <strong>1</strong>:Unmovable. cannot add with other cells(can be remove by powerups).
+        </p>
+        <p class="game-explanation-content">
+            <strong>3</strong>:Moveable. cannot add with other cells(can be removed by powerups).
+        </p>
+        <p class="game-explanation">
+            <strong>PowerUps: hanppenes random:</strong>
+        </p>
+        <p class="game-explanation-content">
+            <strong>7</strong>: remove one cell in the direction player choose.
+        </p>
+        <p class="game-explanation-content">
+            <strong>77</strong>: remove the whole column or row of the cell, direction is  on player's choice, and change to these nums' sum(ceil to power of 2).
+        </p>
+        <p class="game-explanation-content">
+            <strong>777</strong>: remove the whole column and row of this cell, change to these num's sum(ceil to power of 2).
+        </p>
+        <p class="game-explanation-content">
+            <strong>9</strong>: can sum to any cell.
+        </p>
+        <p class = "game-explanation-content">
+            <strong>233</strong>: sum a set of specific num on the gird, and change to these nums' sum(ceil to 2).
+        </p>
+        <p class="game-explanation-content">
+            <strong>666</strong>: change to a random num(range in (1 ~ double of the max value on the grid), ceil to power of 2).
+        </p>
+        <p calss="game-explanation-content">
+            <strong>999</strong>: a great bomb that can remove all cells on the 3*3 grids of this cell, and change to these cells' sum(floor to power of 2).
         </p>
         <hr>
         <p>

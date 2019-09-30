@@ -47,12 +47,12 @@ GameManager.prototype.setup = function () {
         this.won = false;
         this.keepPlaying = false;
         
-        this.targetScore = 2048;
+        this.targetScore = this.storageManager.getBestScore() < 296 ? 2048 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore())))/2;
 
         this.addStartTiles();
     }
     
-    this.actuator.updateTargetScore(this.targetScore);
+    //this.actuator.updateTargetScore(this.targetScore);
 
     this.actuate();
 };
@@ -72,10 +72,15 @@ GameManager.prototype.addStartTiles = function () {
 
 GameManager.prototype.addRandomTile = function () {
     if (this.grid.cellsAvailable()) {
-        var value = Math.random() < 0.9 ? 2 : 4; 
-        var tile = new Tile(this.grid.randomAvailableCell(), value);
+        var value = Math.random() < 0.7 ? 2 : Math.random() < 0.8 ? 4 : 7; 
+        if(value === 7){
+            this.grid.addPowerupTile();
+        }
+        else {
+            var tile = new Tile(this.grid.randomAvailableCell(), value);
 
-        this.grid.insertTile(tile);
+            this.grid.insertTile(tile);
+        }
     }
 };
 
