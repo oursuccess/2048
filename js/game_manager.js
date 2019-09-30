@@ -118,7 +118,8 @@ GameManager.prototype.addPowerupTile = function () {
         var values = [7, 9, 77, 777, 233, 666, 999];
         var value = values[Math.floor(Math.random() * values.length)];
         var isPowerup = true;
-        var tile = new Tile(this.grid.randomAvailableCell(), value, true, isPowerup);
+        var canMerge = false;
+        var tile = new Tile(this.grid.randomAvailableCell(), value, true, isPowerup, canMerge);
         this.grid.insertTile(tile);
     }
 };
@@ -212,7 +213,7 @@ GameManager.prototype.move = function (direction) {
                         self.grid.removeTile(tile);
                     }
                     else if (tile.value === 9) {
-                        if (next && !next.isPowerup && !next.mergedFrom) {
+                        if (next && !next.isPowerup && next.canMerge && !next.mergedFrom) {
                             tile.value = next.value;
                             var merged = new Tile(positions.next, tile.value * 2);
                             merged.mergedFrom = [tile, next];
@@ -276,10 +277,10 @@ GameManager.prototype.move = function (direction) {
         if(this.maxValue() >= this.targetScore){
             this.won = true;
 
-            this.randomDivideCell();
         }
 
         if (this.won) {
+            this.randomDivideCell();
             this.targetScore = this.storageManager.getBestScore() < 1024 ? 1024 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore()))) / 2;
         }
         this.addRandomTile();
@@ -366,13 +367,15 @@ GameManager.prototype.positionsEqual = function (first, second) {
 };
 
 GameManager.prototype.mergeCol = function (tile) {
-    var value = -tile.value;
+    var value = 0;
     var position = {x: tile.x, y: tile.y};
 
     for (var x = 0; x < this.size; x++) {
         var cell = { x: x, y: tile.y };
         if (this.grid.cellOccupied(cell)) {
-            value += this.grid.cellContent(cell).value;
+            if(!this.grid.cellContent(cell).isPowerup && this.grid.cellContent(cell).canMerge){
+                value += this.grid.cellContent(cell).value;
+            }
             this.grid.removeTile(cell);
         }
     }
@@ -386,13 +389,15 @@ GameManager.prototype.mergeCol = function (tile) {
 
 
 GameManager.prototype.mergeRow = function (tile) {
-    var value = -tile.value;
+    var value = 0;
     var position = {x: tile.x, y: tile.y};
 
     for (var y = 0; y < this.size; y++) {
         var cell = { x: tile.x, y: y };
         if (this.grid.cellOccupied(cell)) {
-            value += this.grid.cellContent(cell).value;
+            if(!this.grid.cellContent(cell).isPowerup && this.grid.cellContent(cell).canMerge) {
+                value += this.grid.cellContent(cell).value;
+            }
             this.grid.removeTile(cell);
         }
     }
@@ -405,13 +410,15 @@ GameManager.prototype.mergeRow = function (tile) {
 };
 
 GameManager.prototype.mergeColRow = function (tile) {
-    var value = -tile.value;
+    var value = 0;
     var position = {x: tile.x, y: tile.y};
 
     for (var y = 0; y < this.size; y++) {
         var cell = {x: position.x, y: y};
         if (this.grid.cellOccupied(cell)) {
-            value += this.grid.cellContent(cell).value;
+            if(!this.grid.cellContent(cell).isPowerup && this.grid.cellContent(cell).canMerge) {
+                value += this.grid.cellContent(cell).value;
+            }
             this.grid.removeTile(cell);
         }
     }
@@ -420,7 +427,9 @@ GameManager.prototype.mergeColRow = function (tile) {
         var cell = {x: x, y: position.y};
 
         if (this.grid.cellOccupied(cell)) {
-            value += this.grid.cellContent(cell).value;
+            if(!this.grid.cellContent(cell).isPowerup && this.grid.cellContent(cell).canMerge) {
+                value += this.grid.cellContent(cell).value;
+            }
             this.grid.removeTile(cell);
         }
     }
@@ -439,7 +448,7 @@ GameManager.prototype.mergeANum = function(tile) {
     for (var x = 0; x < this.size; x++) {
         for (var y = 0; y < this.size; y++) {
             var cell = {x: x, y: y};
-            if (this.grid.cellOccupied(cell) && !this.grid.cellContent(cell).isPowerup) {
+            if (this.grid.cellOccupied(cell) && !this.grid.cellContent(cell).isPowerup && this.grid.cellContent(cell).canMerge) {
                 values.push(this.grid.cellContent(cell).value);
             }
         }
@@ -483,7 +492,7 @@ GameManager.prototype.selfChange = function (tile) {
 GameManager.prototype.maxValue = function () {
     var max = 0;
     this.grid.eachCell(function (x, y, tile) {
-        if(tile && !tile.isPowerup && tile.value > max) {
+        if(tile && !tile.isPowerup && tile.canMerge && tile.value > max) {
             max = tile.value;
         }
     });
@@ -504,7 +513,7 @@ GameManager.prototype.boom3x3 = function (tile) {
             var cell = {x: x, y: y};
             var cel = this.grid.cellContent(cell);
             if(cel){
-                if (!cel.isPowerup) {
+                if (!cel.isPowerup && cel.canMerge) {
                     value += cel.value;
                 }
                 this.grid.removeTile(cel);
@@ -533,9 +542,12 @@ GameManager.prototype.randomDivideCell = function () {
 };
 
 GameManager.prototype.divideCell = function (cell) {
-    if (this.grid.cellOccupied(cell)) {
-        this.grid.cellOccupied(cell).value /= 2;
-        return true;
+    if(this.grid.cellOccupied(cell)){
+        var tile = this.grid.cellContent(cell);
+        if(!tile.isPowerup && !tile.value === 2 && tile.canMerge && !tile.value % 2){
+            tile.value /= 2;
+            return true;
+        }
     }
     return false;
 };
