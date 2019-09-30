@@ -95,7 +95,7 @@ GameManager.prototype.addPowerupTile = function () {
     if (this.grid.cellsAvailable) {
         //var values = [7, 9, 77, 777, 233, 666, 999];
         //var value = values[Math.floor(Math.random() * values.length)];
-        var value = 666;
+        var value = 233;
         var isPowerup = true;
         var tile = new Tile(this.grid.randomAvailableCell(), value, true, isPowerup);
         this.grid.insertTile(tile);
@@ -210,7 +210,7 @@ GameManager.prototype.move = function (direction) {
                         self.mergeColRow(tile);
                     }
                     else if (tile.value === 233) {
-
+                        self.mergeANum(tile);
                     }
                     else if (tile.value === 666) {
                         self.selfChange(tile);
@@ -448,12 +448,14 @@ GameManager.prototype.mergeColRow = function (tile) {
     tile.updatePosition(position);
 };
 
-GameManager.prototype.mergeANum = function(tile, position) {
+GameManager.prototype.mergeANum = function(tile) {
     var values = [];
+    var position = {x: tile.x, y: tile.y};
+
     for (var x = 0; x < this.size; x++) {
         for (var y = 0; y < this.size; y++) {
             var cell = {x: x, y: y};
-            if (this.grid.cellOccupied(cell)) {
+            if (this.grid.cellOccupied(cell) && !this.grid.cellContent(cell).isPowerup) {
                 values.push(this.grid.cellContent(cell).value);
             }
         }
@@ -476,7 +478,7 @@ GameManager.prototype.mergeANum = function(tile, position) {
         this.grid.removeTile(tile);
         value = Math.pow(2, Math.ceil(Math.log2(value)));
 
-        var powered = new Tile(position, value);
+        var powered = new Tile(position, value, value === 1 ? false : true);
         this.grid.insertTile(powered);
         tile.updatePosition(position);
     }
