@@ -95,7 +95,7 @@ GameManager.prototype.addPowerupTile = function () {
     if (this.grid.cellsAvailable) {
         //var values = [7, 9, 77, 777, 233, 666, 999];
         //var value = values[Math.floor(Math.random() * values.length)];
-        var value = 233;
+        var value = 999;
         var isPowerup = true;
         var tile = new Tile(this.grid.randomAvailableCell(), value, true, isPowerup);
         this.grid.insertTile(tile);
@@ -159,6 +159,7 @@ GameManager.prototype.move = function (direction) {
     var vector = this.getVector(direction);
     var traversals = this.buildTraversals(vector);
     var moved = false;
+    var powerHandled = false;
 
     this.prepareTiles();
 
@@ -216,62 +217,14 @@ GameManager.prototype.move = function (direction) {
                         self.selfChange(tile);
                     }
                     else if (tile.value === 999) {
-
+                        self.boom3x3(tile);
                     }
                     else {
-
+                        tile.isPowerup = false;
+                        self.grid.removeTile(tile);
+                        tile.updatePosition(tile.farthest);
                     }
-                    //self.moveTile(tile, positions.farthest);
-                    /*
-                    switch (tile.value) {
-                        case 7:
-                            var cell = {x: tile.x, y: tile.y};
-                            var previous;
-                            var i = 0;
-                            do {
-                                previous = cell;
-                                cell = {x: previous.x + vector.x, y: previous.y + vector.y};
-                                if (self.grid.cellOccupied(cell)) {
-                                    self.grid.removeTile(cell);
-                                    i++;
-                                    tile.isPowerup = false;
-                                }
-                            } while (i < 1 && self.grid.withinBounds(cell));
-                            self.grid.removeTile(tile);
-                            break;
-                        case 9:
-                            if (next && !next.isPowerup && !next.mergedFrom) {
-                                tile.value = next.value;
-                                var merged = new Tile(positions.next, tile.value * 2);
-                                merged.mergedFrom = [tile, next];
-                                self.grid.insertTile(merged);
-                                self.grid.removeTile(tile);
-                                tile.updatePosition(positions.next);
-                            }
-                            break;
-                        case 77:
-                            if (vector.x !== 0) {
-                                self.mergeCol(tile, positions.next);
-                            } else {
-                                self.mergeRow(tile, positions.next);
-                            }
-                            break;
-                        case 777:
-                            self.mergeColRow(tile);
-                            break;
-                        case 233:
-                            self.mergeANum(tile, position.farthest);
-                            break;
-                        case 666:
-                            self.selfChange(tile);
-                            break;
-                        case 999:
-                            self.boom3x3(tile);
-                            break;
-                        default:
-                                break;
-                    }
-                    */
+                    powerHandled = true;
                 }
                 else if (next && next.value === tile.value && !next.mergedFrom) {
                     var merged = new Tile(positions.next, tile.value * 2 );
@@ -290,7 +243,7 @@ GameManager.prototype.move = function (direction) {
                     self.moveTile(tile, positions.farthest);
                 }
 
-                if (!tile || !self.positionsEqual(cell, tile)) {
+                if (!tile || !self.positionsEqual(cell, tile) || powerHandled) {
                     moved = true;
                 }
             }
@@ -506,26 +459,33 @@ GameManager.prototype.maxValue = function () {
     return max;
 };
 
-GameManager.prototype.boom3x3 = function (tile, position) {
+GameManager.prototype.boom3x3 = function (tile) {
     var value = 0;
-    var xMin = Math.max(0, position.x - 1);
-    var xMax = Math.min(this.size, position.x + 2);
-    var yMin = Math.max(0, position.y - 1);
-    var yMax = Math.min(this.size, position.y + 2);
+    var position = {x: tile.x, y: tile.y};
+
+    var xMin = Math.max(0, tile.x - 1);
+    var xMax = Math.min(this.size, tile.x + 2);
+    var yMin = Math.max(0, tile.y - 1);
+    var yMax = Math.min(this.size, tile.y + 2);
+
     for(var x = xMin; x < xMax; x++){
         for(var y = yMin; y < yMax; y++){
-            var cell = {x:x, y:y};
-            if(this.grid.cellOccupied(cell)){
-                value += this.grid.cellContent(cell).value;
-                this.grid.removeTile(cell);
+            var cell = {x: x, y: y};
+            var cel = this.grid.cellContent(cell);
+            if(cel){
+                if (!cel.isPowerup) {
+                    value += cel.value;
+                }
+                this.grid.removeTile(cel);
             }
         }
     }
 
-    //this.grid.removeTile(tile);
-    value = Math.pow(2, Math.ceil(Math.log2(value)));
+    this.grid.removeTile(tile);
 
-    var powered = new Tile(position, value);
+    value = Math.max(Math.pow(2, Math.floor(Math.log2(value))), 1);
+
+    var powered = new Tile(position, value, value === 1 ? false : true);
     this.grid.insertTile(powered);
     tile.updatePosition(position);
 };
