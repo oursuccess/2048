@@ -559,6 +559,13 @@ hr {
 .game-intro {
   float: left;
   line-height: 42px;
+  padding: 0 4px;
+  margin-bottom: 0; }
+
+.game-targetScore{
+  float: left;
+  line-height: 42px;
+  padding: 0 4px;
   margin-bottom: 0; }
 
 .restart-button {
@@ -606,6 +613,12 @@ hr {
     display: block;
     box-sizing: border-box;
     line-height: 1.65; }
+
+  .game-targetScore {
+    width: 55%;
+    display: block;
+    box-sizing: border-box;
+    line-height: 1.65;} 
 
   .restart-button {
     width: 42%;

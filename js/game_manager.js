@@ -37,6 +37,8 @@ GameManager.prototype.setup = function () {
         this.over = previousState.over;
         this.won = previousState.won;
         this.keepPlaying = previousState.keepPlaying;
+
+        this.targetScore = this.storageManager.getBestScore() < 4096 ? 2048 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore())))/2;
     }
     else {
         this.grid = new Grid(this.size);
@@ -44,9 +46,13 @@ GameManager.prototype.setup = function () {
         this.over = false;
         this.won = false;
         this.keepPlaying = false;
+        
+        this.targetScore = 2048;
 
         this.addStartTiles();
     }
+    
+    this.actuator.updateTargetScore(this.targetScore);
 
     this.actuate();
 };
@@ -93,9 +99,8 @@ GameManager.prototype.addPowerupTile = function () {
     //7: 消除指定方向上的1格数字
     
     if (this.grid.cellsAvailable) {
-        //var values = [7, 9, 77, 777, 233, 666, 999];
-        //var value = values[Math.floor(Math.random() * values.length)];
-        var value = 999;
+        var values = [7, 9, 77, 777, 233, 666, 999];
+        var value = values[Math.floor(Math.random() * values.length)];
         var isPowerup = true;
         var tile = new Tile(this.grid.randomAvailableCell(), value, true, isPowerup);
         this.grid.insertTile(tile);
@@ -237,7 +242,7 @@ GameManager.prototype.move = function (direction) {
 
                     self.score += merged.value;
 
-                    if (merged.value >= 2048) self.won = true;
+                    //if (merged.value >= 2048) self.won = true;
                 }
                 else {
                     self.moveTile(tile, positions.farthest);
@@ -251,6 +256,10 @@ GameManager.prototype.move = function (direction) {
     });
 
     if (moved) { 
+        if(this.maxValue() >= this.targetScore){
+            this.won = true;
+        }
+
         this.addRandomTile();
 
         if (!this.movesAvailable()) {

@@ -113,6 +113,10 @@ HTMLActuator.prototype.updateScore = function (score) {
     }
 };
 
+HTMLActuator.prototype.updateTargetScore = function (targetScore) {
+
+};
+
 HTMLActuator.prototype.updateBestScore = function (bestScore) {
     this.bestContainer.textContent = bestScore;
 };
