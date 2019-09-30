@@ -1,4 +1,4 @@
-function Tile(position, value, moveable = true, Powerup = false) {
+function Tile(position, value, moveable = true, Powerup = false, canMerge = true) {
     this.x = position.x;
     this.y = position.y;
     this.value = value || 2;
@@ -8,6 +8,7 @@ function Tile(position, value, moveable = true, Powerup = false) {
     
     this.moveable = moveable;
     this.isPowerup = Powerup;
+    this.canMerge = canMerge;
 }
 
 Tile.prototype.savePosition = function () {

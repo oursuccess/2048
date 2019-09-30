@@ -371,6 +371,11 @@ hr {
     background: #00ffff;
     font-size: 25px;
   }
+  .tile.tile-trouble .tile.inner{
+    color: #880000;
+    background: #008888;
+    font-size: 10px;
+  }
 
   .tile.tile-2 .tile-inner {
     background: #eee4da;
@@ -433,10 +438,15 @@ hr {
   .tile.tile-super .tile-inner {
     color: #f9f6f2;
     background: #3c3a32;
-    font-size: 30px; }
+    font-size: 15px; }
     @media screen and (max-width: 520px) {
       .tile.tile-super .tile-inner {
         font-size: 10px; } }
+  .tile.tile-trouble .tile-inner{
+    color: #880000;
+    background: #008888;
+    font-size: 14px;
+  }
 
 @-webkit-keyframes appear {
   0% {

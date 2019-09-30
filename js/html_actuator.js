@@ -25,6 +25,8 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
         self.updateScore(metadata.score);
         self.updateBestScore(metadata.bestScore);
 
+        self.updateTargetScore(metadata.targetScore);
+
         if (metadata.terminated) {
             if (metadata.over) {
                 self.message(false);
@@ -56,6 +58,8 @@ HTMLActuator.prototype.addTile = function (tile) {
     var classes = ["tile", "tile-" + tile.value, positionClass];
 
     if (tile.value > 2048) classes.push("tile-super");
+
+    if (tile.value % 2 && ![1,3,7,9,77,777,233,666,999].includes(tile.value)) classes.push("tile-trouble");
 
     this.applyClasses(wrapper, classes);
     inner.classList.add("tile-inner");
@@ -115,7 +119,7 @@ HTMLActuator.prototype.updateScore = function (score) {
 };
 
 HTMLActuator.prototype.updateTargetScore = function (targetScore) {
-    this.targetScoreAsset.textContent = 1;
+    this.targetScoreAsset.textContent = targetScore? targetScore : 2048;
 };
 
 

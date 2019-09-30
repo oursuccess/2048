@@ -38,7 +38,7 @@ GameManager.prototype.setup = function () {
         this.won = previousState.won;
         this.keepPlaying = previousState.keepPlaying;
 
-        this.targetScore = this.storageManager.getBestScore() < 4096 ? 2048 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore())))/2;
+        this.targetScore = this.storageManager.getBestScore() < 1024 ? 1024 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore())))/2;
     }
     else {
         this.grid = new Grid(this.size);
@@ -47,7 +47,7 @@ GameManager.prototype.setup = function () {
         this.won = false;
         this.keepPlaying = false;
         
-        this.targetScore = this.storageManager.getBestScore() < 296 ? 2048 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore())))/2;
+        this.targetScore = this.storageManager.getBestScore() < 1024 ? 1024 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore())))/2;
 
         this.addStartTiles();
     }
@@ -72,14 +72,24 @@ GameManager.prototype.addStartTiles = function () {
 
 GameManager.prototype.addRandomTile = function () {
     if (this.grid.cellsAvailable()) {
-        var value = Math.random() < 0.7 ? 2 : Math.random() < 0.8 ? 4 : 7; 
-        if(value === 7){
-            this.grid.addPowerupTile();
+        if(Math.random() < 0.15){
+            this.addPowerupTile();
         }
         else {
-            var tile = new Tile(this.grid.randomAvailableCell(), value);
-
-            this.grid.insertTile(tile);
+            var value = Math.random() < 0.7 ? 2 : 4; 
+            if(Math.random() + this.score / (this.getBestScore() * 2 + 49600)> 0.95){
+                value = 2 * Math.floor(Math.random() * 1024 % 512) + 1;
+                var values = [7, 9, 77, 777, 233, 999];
+                if (values.includes(value)) {
+                    value += 4;
+                }
+                var tile = new Tile(this.grid.randomAvailableCell(), value, true, false, false);
+                this.grid.insertTile(tile);
+            }
+            else{
+                var tile = new Tile(this.grid.randomAvailableCell(), value);
+                this.grid.insertTile(tile);
+            }
         }
     }
 };
@@ -115,7 +125,7 @@ GameManager.prototype.addPowerupTile = function () {
 GameManager.prototype.actuate = function () {
     if (this.storageManager.getBestScore() < this.score) {
         this.storageManager.setBestScore(this.score);
-        if (!this.over) {
+        if (!this.over && Math.random() < 0.4) {
             this.addPowerupTile();
         }
     }
@@ -132,7 +142,8 @@ GameManager.prototype.actuate = function () {
         over: this.over,
         won: this.won,
         bestScore: this.storageManager.getBestScore(),
-        terminated: this.isGameTerminated()
+        terminated: this.isGameTerminated(),
+        targetScore: this.targetScore
     });
 };
 
@@ -236,7 +247,7 @@ GameManager.prototype.move = function (direction) {
                     }
                     powerHandled = true;
                 }
-                else if (next && next.value === tile.value && !next.mergedFrom) {
+                else if (tile.canMerge && next && next.value === tile.value && !next.mergedFrom) {
                     var merged = new Tile(positions.next, tile.value * 2 );
                     merged.mergedFrom = [tile, next];
 
@@ -263,6 +274,8 @@ GameManager.prototype.move = function (direction) {
     if (moved) { 
         if(this.maxValue() >= this.targetScore){
             this.won = true;
+            
+            this.randomDivideCell();
         }
 
         this.addRandomTile();
