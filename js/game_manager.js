@@ -283,14 +283,21 @@ GameManager.prototype.move = function (direction) {
 
         }
 
-        if (this.won) {
-            this.randomDivideCell();
-            this.targetScore = this.storageManager.getBestScore() < 1024 ? 1024 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore()))) / 2;
+        if (this.score > 2048 || this.won) {
             if(!powerupUped){
                 this.values.push(77,777, 233, 666, 999);
                 powerupUped = true;
             }
         }
+        
+        if(this.score > 4096) {
+            this.randomDivideCell();
+        }
+
+        if(this.won){
+            this.targetScore = this.storageManager.getBestScore() < 1024 ? 1024 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore()))) / 2;
+        }
+
         this.addRandomTile();
 
         if (!this.movesAvailable()) {
@@ -543,22 +550,20 @@ GameManager.prototype.boom3x3 = function (tile) {
 
 GameManager.prototype.randomDivideCell = function () {
     var divided = false;
-    while (!divided) {
-        var x = Math.floor(Math.random() * 3);
-        var y = Math.floor(Math.random() * 3);
+    var times = 0;
+    var x, y;
+    while (!divided && times !== 10) {
+        times++;
+        x = Math.round(Math.random() * 3);
+        y = Math.round(Math.random() * 3);
 
         var cell = {x: x, y: y};
-        divided = this.divideCell(cell);
-    }
-};
-
-GameManager.prototype.divideCell = function (cell) {
-    if(this.grid.cellOccupied(cell)){
-        var tile = this.grid.cellContent(cell);
-        if(!tile.isPowerup && !tile.value === 2 && tile.canMerge && !tile.value % 2){
-            tile.value /= 2;
-            return true;
+        if(this.grid.cellOccupied(cell)){
+            var tile = this.grid.cellContent(cell);
+            if(!tile.isPowerup && (tile.value % 2 === 1) && tile.canMerge){
+                tile.value /= 2;
+                divided = true;
+            }
         }
     }
-    return false;
 };
