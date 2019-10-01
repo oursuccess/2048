@@ -10,7 +10,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
     this.inputManager.on("restart", this.restart.bind(this));
     this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
 
-    this.values = [7,9];
+    this.values = ['\u{002702}','\u{01f4e9}'];
 
     this.setup();
 }
@@ -79,14 +79,17 @@ GameManager.prototype.addRandomTile = function () {
         }
         else {
             var value = Math.random() < 0.7 ? 2 : 4; 
-            if (this.won && Math.random() + this.score / (this.storageManager.getBestScore() * 2 + 49600)> 0.95) {
+            if (this.won && Math.random() + this.score / (this.storageManager.getBestScore() * 2 + 49600)> 0.5) {
                 
-                value = 2 * Math.floor(Math.random() * 1024 % 512) + 1;
+                //value = 2 * Math.floor(Math.random() * 1024 % 512) + 1;
                 //var values = [7, 9, 77, 777, 233, 999];
+                value = '\u{002744}';
 
+                /*
                 if (this.values.includes(value)) {
                     value += 4;
                 }
+                */
                 var tile = new Tile(this.grid.randomAvailableCell(), value, true, false, false);
                 this.grid.insertTile(tile);
             }
@@ -100,7 +103,7 @@ GameManager.prototype.addRandomTile = function () {
 
 GameManager.prototype.addStaticTile = function (moveable) {
     if (this.grid.cellsAvailable()) {
-        var value = moveable ? 3 : 1;
+        var value = moveable ? 3 : '\u{0026d4}';
         var tile = new Tile(this.grid.randomAvailableCell(), value, moveable);
 
         this.grid.insertTile(tile);
@@ -201,7 +204,7 @@ GameManager.prototype.move = function (direction) {
 
                 //检验是否为奖励块
                 if (tile.isPowerup) {
-                    if (tile.value === 7) {
+                    if (tile.value === self.values[0]) {
                         var cell = {x: tile.x, y: tile.y};
                         var previous;
                         var i = 0;
@@ -216,7 +219,7 @@ GameManager.prototype.move = function (direction) {
                         } while (i < 1 && self.grid.withinBounds(cell));
                         self.grid.removeTile(tile);
                     }
-                    else if (tile.value === 9) {
+                    else if (tile.value === self.values[1]) {
                         if (next && !next.isPowerup && next.canMerge && !next.mergedFrom) {
                             tile.value = next.value;
                             var merged = new Tile(positions.next, tile.value * 2);
@@ -227,23 +230,23 @@ GameManager.prototype.move = function (direction) {
                             tile.updatePosition(positions.next);
                             }
                     }
-                    else if (tile.value === 77) {
+                    else if (tile.value === self.values[2]) {
                         if (vector.x !== 0) {
                             self.mergeCol(tile);
                         } else {
                             self.mergeRow(tile);
                         }
                     }
-                    else if (tile.value === 777) {
+                    else if (tile.value === self.values[3]) {
                         self.mergeColRow(tile);
                     }
-                    else if (tile.value === 233) {
+                    else if (tile.value === self.values[4]) {
                         self.mergeANum(tile);
                     }
-                    else if (tile.value === 666) {
+                    else if (tile.value === self.values[5]) {
                         self.selfChange(tile);
                     }
-                    else if (tile.value === 999) {
+                    else if (tile.value === self.values[6]) {
                         self.boom3x3(tile);
                     }
                     else {
@@ -285,7 +288,7 @@ GameManager.prototype.move = function (direction) {
 
         if (this.score > 2048 || this.won) {
             if(!powerupUped){
-                this.values.push(77,777, 233, 666, 999);
+                this.values.push('\u{002796}','\u{002795}', '\u{01f500}', '\u{01f501}', '\u{01f4a3}');
                 powerupUped = true;
             }
         }
@@ -359,7 +362,7 @@ GameManager.prototype.tileMatchesAvailable = function () {
         for (var y = 0; y < this.size; y++) {
             tile = this.grid.cellContent({ x: x, y: y });
 
-            if (tile && tile.value % 2 === 0 && tile.value !== 666) {
+            if (tile && tile.value === +tile.value) {
                 for (var direction = 0; direction < 4; direction++) {
                     var vector = self.getVector(direction);
                     var cell = { x: x + vector.x, y: y + vector.y };
@@ -428,6 +431,7 @@ GameManager.prototype.mergeRow = function (tile) {
 
 GameManager.prototype.mergeColRow = function (tile) {
     var value = 0;
+    tile.value = 0;
     var position = {x: tile.x, y: tile.y};
 
     for (var y = 0; y < this.size; y++) {
@@ -452,7 +456,7 @@ GameManager.prototype.mergeColRow = function (tile) {
     }
 
     value = Math.pow(2, Math.ceil(Math.log2(value)));
-    value = 1 + Math.round(Math.random());
+    value /= 1 + Math.round(Math.random());
 
     var powered = new Tile(position, value);
     this.grid.insertTile(powered);
@@ -499,6 +503,7 @@ GameManager.prototype.selfChange = function (tile) {
     var position = {x: tile.x, y: tile.y};
     var value = this.maxValue();
     value = Math.pow(2, Math.floor(Math.random() * Math.log2(value * 2)));
+    if(value === 1) value = 2;
 
     var powered = new Tile(position, value, value === 1 ? false : true);
 
@@ -531,7 +536,7 @@ GameManager.prototype.boom3x3 = function (tile) {
             var cell = {x: x, y: y};
             var cel = this.grid.cellContent(cell);
             if(cel){
-                if (!cel.isPowerup && cel.canMerge) {
+                if (!cel.isPowerup && cel.canMerge && cel.value === +cel.value) {
                     value += cel.value;
                 }
                 this.grid.removeTile(cel);
@@ -542,8 +547,15 @@ GameManager.prototype.boom3x3 = function (tile) {
     this.grid.removeTile(tile);
 
     value = Math.max(Math.pow(2, Math.floor(Math.log2(value))), 1);
+    var moveable = true;
+    if(value === 1 && Math.random() < 0.3){
+        moveable = false;
+        value = '\u{0026d4}';
+    } else {
+        value = 2;
+    }
 
-    var powered = new Tile(position, value, value === 1 ? false : true);
+    var powered = new Tile(position, value, moveable);
     this.grid.insertTile(powered);
     tile.updatePosition(position);
 };
@@ -560,8 +572,14 @@ GameManager.prototype.randomDivideCell = function () {
         var cell = {x: x, y: y};
         if(this.grid.cellOccupied(cell)){
             var tile = this.grid.cellContent(cell);
-            if(!tile.isPowerup && (tile.value % 2 === 1) && tile.canMerge){
+            if(!tile.isPowerup && tile.canMerge && (tile.value === +tile.value)){
                 tile.value /= 2;
+                if(tile.value < 2 && Math.random() < 0.3) {
+                    tile.value = '\u{0026d4}';
+                    tile.moveable = false;
+                } else {
+                    tile.value = 2;
+                }
                 divided = true;
             }
         }
