@@ -5,11 +5,10 @@ function KeyboardInputManager() {
         this.eventTouchstart = "MSPointerDown";
         this.eventTouchmove = "MSPointerMove";
         this.eventTouchend = "MSPointerUp";
-    }
-    else {
+    } else {
         this.eventTouchstart = "touchstart";
         this.eventTouchmove = "touchmove";
-        this.evnetTouchend = "touchend";
+        this.eventTouchend = "touchend";
     }
 
     this.listen();
