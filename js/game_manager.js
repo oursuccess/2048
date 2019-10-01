@@ -79,7 +79,7 @@ GameManager.prototype.addRandomTile = function () {
         }
         else {
             var value = Math.random() < 0.7 ? 2 : 4; 
-            if (this.won && Math.random() + this.score / (this.storageManager.getBestScore() * 2 + 49600)> 0.5) {
+            if (this.score > 8192 && Math.random() + this.score / (this.storageManager.getBestScore() * 2 + 49600)> 0.95) {
                 
                 //value = 2 * Math.floor(Math.random() * 1024 % 512) + 1;
                 //var values = [7, 9, 77, 777, 233, 999];
