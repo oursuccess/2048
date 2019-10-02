@@ -79,7 +79,7 @@ GameManager.prototype.addRandomTile = function () {
         }
         else {
             var value = Math.random() < 0.7 ? 2 : 4; 
-            if (this.score > 8192 && Math.random() + this.score / (this.storageManager.getBestScore() * 2 + 49600)> 0.95) {
+            if (this.score > 8192 && Math.random() + this.score / (this.storageManager.getBestScore() * 2 + 24800)> 0.92) {
                 
                 //value = 2 * Math.floor(Math.random() * 1024 % 512) + 1;
                 //var values = [7, 9, 77, 777, 233, 999];
@@ -133,7 +133,7 @@ GameManager.prototype.addPowerupTile = function () {
 GameManager.prototype.actuate = function () {
     if (this.storageManager.getBestScore() < this.score) {
         this.storageManager.setBestScore(this.score);
-        if (!this.over && Math.random() < 0.4) {
+        if (!this.over && Math.random() < 0.1) {
             this.addPowerupTile();
         }
     }
@@ -234,6 +234,7 @@ GameManager.prototype.move = function (direction) {
                         if (vector.x !== 0) {
                             self.mergeCol(tile);
                         } else {
+                            tile.value = '\u{002195}';
                             self.mergeRow(tile);
                         }
                     }
@@ -286,16 +287,18 @@ GameManager.prototype.move = function (direction) {
 
         }
 
-        if (this.score > 2048 || this.won) {
+        if (this.score > 8 || this.won) {
             if(!powerupUped){
-                this.values.push('\u{002796}','\u{002795}', '\u{01f500}', '\u{01f501}', '\u{01f4a3}');
+                this.values = ['\u{002702}','\u{01f4e9}','\u{002194}','\u{002795}', '\u{01f500}', '\u{01f501}', '\u{01f4a3}'];
                 powerupUped = true;
             }
         }
         
-        if(this.score > 4096) {
+        /*
+        if(this.score > 6) {
             this.randomDivideCell();
         }
+        */
 
         if(this.won){
             this.targetScore = this.storageManager.getBestScore() < 1024 ? 1024 : Math.pow(2, Math.ceil(Math.log2(this.storageManager.getBestScore()))) / 2;
@@ -400,8 +403,18 @@ GameManager.prototype.mergeCol = function (tile) {
 
     value = Math.pow(2, Math.ceil(Math.log2(value)));
     value /= 1 + Math.round(Math.random());
+    var canMerge = true;
 
-    var powered = new Tile(position, value);
+    if(value < 2){
+        value = 2;
+    }
+
+    if(value === 2 && Math.random() < 0.3){
+        value = '\u{002744}';
+        canMerge = false;
+    }
+
+    var powered = new Tile(position, value, true, false, canMerge);
     this.grid.insertTile(powered);
     tile.updatePosition(position);
 };
@@ -423,8 +436,18 @@ GameManager.prototype.mergeRow = function (tile) {
 
     value = Math.pow(2, Math.ceil(Math.log2(value)));
     value /= 1 + Math.round(Math.random());
+    var canMerge = true;
 
-    var powered = new Tile(position, value);
+    if(value < 2){
+        value = 2;
+    }
+
+    if(value === 2 && Math.random() < 0.3){
+        value = '\u{002744}';
+        canMerge = false;
+    }
+
+    var powered = new Tile(position, value, true, false, canMerge);
     this.grid.insertTile(powered);
     tile.updatePosition(position);
 };
@@ -457,8 +480,18 @@ GameManager.prototype.mergeColRow = function (tile) {
 
     value = Math.pow(2, Math.ceil(Math.log2(value)));
     value /= 1 + Math.round(Math.random());
+    var canMerge = true;
 
-    var powered = new Tile(position, value);
+    if(value < 2){
+        value = 2;
+    }
+
+    if(value === 2 && Math.random() < 0.3){
+        value = '\u{002744}';
+        canMerge = false;
+    }
+
+    var powered = new Tile(position, value, true, false, canMerge);
     this.grid.insertTile(powered);
     tile.updatePosition(position);
 };
@@ -493,7 +526,16 @@ GameManager.prototype.mergeANum = function(tile) {
         this.grid.removeTile(tile);
         value = Math.pow(2, Math.ceil(Math.log2(value)));
 
-        var powered = new Tile(position, value, value === 1 ? false : true);
+        var canMove = true;
+        var canMerge = true;
+        var isPowerup = false;
+
+        if(value === 1){
+            value = '\u{002744}';
+            canMerge = false;
+        }
+
+        var powered = new Tile(position, value, canMove, isPowerup, canMerge);
         this.grid.insertTile(powered);
         tile.updatePosition(position);
     }
@@ -574,7 +616,7 @@ GameManager.prototype.randomDivideCell = function () {
             var tile = this.grid.cellContent(cell);
             if(!tile.isPowerup && tile.canMerge && (tile.value === +tile.value)){
                 tile.value /= 2;
-                if(tile.value < 2 && Math.random() < 0.3) {
+                if(tile.value < 2 || Math.random() < 0.05) {
                     tile.value = '\u{0026d4}';
                     tile.moveable = false;
                 } else {
