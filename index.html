@@ -79,43 +79,40 @@
             <strong class="important">How to play:</strong>Use your <strong>arrow keys</strong> to move the tiles.<strong>Merge</strong> them into one!
         </p>
         <p class="game-explanation">
-            <strong>Bad Cells:</strong>:
+            <strong>Bad Cells:</strong>惩罚方块:
         </p>
         <p class="game-explanation-content">
-            <strong>&#x026d4</strong>:Unmovable. cannot add with other cells(can be remove by powerups).
+            <strong>&#x026d4</strong>:Unmovable. cannot add with other cells(can be remove by powerups).无法移动，无法与其它方块合并（但可以被奖励方块移除）
         </p>
         <p class="game-explanation-content">
-            <strong>&#x02744</strong>:Movable. cannot add with other cells(can be remove by powerups).
+            <strong>&#x02744</strong>:Movable. cannot add with other cells(can be remove by powerups).可以移动，但无法与其它方块合并
         </p>
         <p class="game-explanation-content">
-            <strong>3</strong>:Moveable. can add with other 3s(can be removed by powerups).
+            <strong>3</strong>:Moveable. can add with other 3s(can be removed by powerups).可以移动，可以和3结合（虽然并没有什么用）
         </p>
         <p class="game-explanation">
-            <strong>PowerUps(may not so good):</strong>
+            <strong>PowerUps(may not so good):</strong> （并不一定好的）奖励方块
         </p>
         <p class="game-explanation-content">
-            <strong>&#x02702</strong>: remove one cell in the direction player choose.
+            <strong>&#x02702</strong>: remove one cell in the direction player choose.移除玩家行进方向上的一个方块
         </p>
         <p class="game-explanation-content">
-            <strong>&#x1f4e9</strong>: remove the whole column or row of the cell, direction is  on player's choice, and change to these nums' sum(around those cell's sum, the same to 777 and 999).
+            <strong>&#x1f4e9</strong>: remove the whole column or row of the cell, direction is  on player's choice, and change to these nums' sum.将本行/列所有方块移除，并变为这些方块之和（向2取整，若为空则变为坏方块）
         </p>
         <p class="game-explanation-content">
-            <strong>&#x02796</strong>: remove the whole column and row of this cell, change to these num's sum.
+            <strong>&#x02796</strong>: remove the whole column and row of this cell, change to these num's sum.移除本行与本列所有方块，并返回这些方块的和（向2的N次方取整）
         </p>
         <p class="game-explanation-content">
-            <strong>&#x02795</strong>: can sum to any cell(to 1,3 and power of 2s).
+            <strong>&#x02795</strong>: can sum to any cell.变为移动方向上的方块对应的数（若不存在或其无法合并，则不变化）
         </p>
         <p class = "game-explanation-content">
-            <strong>&#x1f500</strong>: sum cells with specific num on the gird, and change to these nums' sum.
+            <strong>&#x1f500</strong>: sum cells with specific num on the gird, and change to these nums' sum.消除特定数字，然后在本方块原地生成这些数字的和（向2的N次方取整）
         </p>
         <p class="game-explanation-content">
-            <strong>&#x1f501</strong>: change to a random num(range in (1 ~ double of the max value on the grid).
+            <strong>&#x1f501</strong>: change to a random num(range in (1 ~ double of the max value on the grid).变为一个随机的数字（2~场上最大数字的2倍）
         </p>
         <p calss="game-explanation-content">
-            <strong>&#x1f4a3</strong>: a great bomb that can remove all cells on the 3*3 grids of this cell, and change to these cells' sum(floor to power of 2).
-        </p>
-        <p calss="game-explanation">
-            <strong>after won or your scoe is above 2048, there will be other powerup cells and trouble cells.</strong>
+            <strong>&#x1f4a3</strong>: a great bomb that can remove all cells on the 3*3 grids of this cell, and change to these cells' sum(floor to power of 2).消除自身为中心3*3的所有方块，然后变为这些方块的和
         </p>
         <hr>
         <p>

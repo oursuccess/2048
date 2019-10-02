@@ -287,7 +287,7 @@ GameManager.prototype.move = function (direction) {
 
         }
 
-        if (this.score > 8 || this.won) {
+        if (this.score > 2048 || this.won) {
             if(!powerupUped){
                 this.values = ['\u{002702}','\u{01f4e9}','\u{002194}','\u{002795}', '\u{01f500}', '\u{01f501}', '\u{01f4a3}'];
                 powerupUped = true;
@@ -547,7 +547,7 @@ GameManager.prototype.selfChange = function (tile) {
     value = Math.pow(2, Math.floor(Math.random() * Math.log2(value * 2)));
     if(value === 1) value = 2;
 
-    var powered = new Tile(position, value, value === 1 ? false : true);
+    var powered = new Tile(position, value);
 
     this.grid.removeTile(tile);
     this.grid.insertTile(powered);
